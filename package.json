@@ -1,0 +1,39 @@
+{
+  "name": "io_connect_ts",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for connecting to and interacting with the IoSense platform data services",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "ts-node --esm index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/perths/io_connect_ts.git"
+  },
+  "keywords": [
+    "iosense",
+    "sdk",
+    "api",
+    "connector",
+    "data",
+    "sensors",
+    "iot",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
