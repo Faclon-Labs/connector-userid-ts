@@ -1118,6 +1118,9 @@ export default class DataAccess {
           response = await axios.get(requestUrl, axiosConfig);
 
           // Parse the JSON response - Axios automatically parses JSON and puts it in response.data
+          if (!response) {
+            throw new Error("No response received from API");
+          }
           const responseData: LoadEntitiesResponse = response.data;
           
           if (responseData.error) {

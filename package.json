@@ -3,11 +3,18 @@
   "version": "1.0.0",
   "description": "TypeScript SDK for connecting to and interacting with the IoSense platform data services",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "start": "npm run build && node dist/index.js",
-    "dev": "ts-node --esm index.ts"
+    "dev": "ts-node --esm index.ts",
+    "test": "npm run build && node dist/testcases/index.js"
   },
   "repository": {
     "type": "git",
