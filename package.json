@@ -1,5 +1,5 @@
 {
-  "name": "io_connect_ts",
+  "name": "connector-userid-ts",
   "version": "1.0.0",
   "description": "TypeScript SDK for connecting to and interacting with the IoSense platform data services",
   "main": "dist/index.js",
