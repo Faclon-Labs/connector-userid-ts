@@ -267,7 +267,59 @@ export default class EventsHandler {
      * Retrieves events within a specified time slot.
      * 
      * @param options - Configuration options for retrieving events
+     * @param options.startTime - Start time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.endTime - End time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.onPrem - Optional flag for on-premises server usage
      * @returns A list of events found within the specified time slot
+     *
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '63d9138194015538294b6cb4',
+     *   dataUrl: 'datads.iosense.io'
+     * });
+     * 
+     * const result = await eventsHandler.getEventsInTimeslot({
+     *   startTime: "2025-03-18 00:00:00",
+     *   endTime: "2025-03-18 23:59:59"
+     * });
+     * // Example output:
+     * // [
+     * //   {
+     * //     _id: '67d927fddbd99e864ced1922',
+     * //     title: 'ALERT: High Current THD',
+     * //     devID: 'PPAPEM_G8',
+     * //     message: 'High Current THD\nDevice:- MDB - UTILITY\nPhase 1 Current THD : 84.6 % ...',
+     * //     eventTags: ['641ab202c02c32f195f7c8e8'],
+     * //     createdOn: '2025-03-18T07:59:57.556Z',
+     * //     date: '18/03/2025',
+     * //     time: '1:29:57 pm',
+     * //     isRead: 'no'
+     * //   },
+     * //   {
+     * //     _id: '67d8fe55dbd99e5cd9ec8844',
+     * //     title: 'ALERT: Low Voltage Alert',
+     * //     devID: 'PPAPEM_P6',
+     * //     message: 'Low Voltage below 237\nDevice:- LT Panel\nLine to Neutral Voltage: 235.5 V ...',
+     * //     eventTags: ['64030b81130b12e44089c4ab'],
+     * //     createdOn: '2025-03-18T05:02:13.035Z',
+     * //     date: '18/03/2025',
+     * //     time: '10:32:13 am',
+     * //     isRead: 'no'
+     * //   }
+     * // ]
+     * ```
+     *
+     * Each event object contains:
+     * - _id: Unique event identifier
+     * - title: Event title/alert
+     * - devID: Device identifier
+     * - message: Event message
+     * - eventTags: Array of event tag IDs
+     * - createdOn: Event creation timestamp
+     * - date: Event date (formatted)
+     * - time: Event time (formatted)
+     * - isRead: Read status
      */
     try {
       const { startTime, endTime, onPrem } = options;
@@ -317,7 +369,49 @@ export default class EventsHandler {
      * Retrieve a specified number of event data records up to a given end time.
      * 
      * @param options - Configuration options for retrieving event data count
-     * @returns A list of event data records
+     * @param options.endTime - Optional end time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.count - Optional number of records to return (default: 10, max: 10000)
+     * @param options.onPrem - Optional flag for on-premises server usage
+     * @returns Array of event data records
+     * 
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '63d9138194015538294b6cb4',
+     *   dataUrl: 'datads.iosense.io'
+     * });
+     * 
+     * const result = await eventsHandler.getEventDataCount({
+     *   count: 1,
+     *   endTime: "2023-06-14 12:00:00"
+     * });
+     * 
+     * // Example output:
+     * // [
+     * //   {
+     * //     "_id": "6489a1159d3b585881814bc2",
+     * //     "title": "ALERT: High Voltage Alert",
+     * //     "devID": "PPAPEM_P6",
+     * //     "message": "Low Voltage above 250\nDevice:- LT Panel\nLine to Neutral Voltage: 244.1 V",
+     * //     "eventTags": ["64030ba6130b12e44089c4c5"],
+     * //     "createdOn": "2023-06-14T11:14:29.500Z",
+     * //     "isRead": "yes",
+     * //     "date": "14/06/2023",
+     * //     "time": "4:44:29 pm"
+     * //   }
+     * // ]
+     * ```
+     * 
+     * Each event record contains:
+     * - _id: Unique identifier for the event
+     * - title: Event title/alert message
+     * - devID: Device identifier
+     * - message: Detailed event message
+     * - eventTags: Array of event category IDs
+     * - createdOn: Event creation timestamp
+     * - isRead: Read status of the event
+     * - date: Formatted date of the event
+     * - time: Formatted time of the event
      */
     try {
       const { endTime, count = 10, onPrem } = options;
@@ -363,7 +457,45 @@ export default class EventsHandler {
      * Retrieve a list of event categories from the server.
      * 
      * @param options - Configuration options
-     * @returns A list of event categories
+     * @param options.onPrem - Optional flag for on-premises server usage
+     * @returns Array of event categories with their properties
+     * 
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '63d9138194015538294b6cb4',
+     *   dataUrl: 'datads.iosense.io'
+     * });
+     * 
+     * const categories = await eventsHandler.getEventCategories();
+     * // Example output:
+     * // [
+     * //   {
+     * //     "color": "#ff0000",
+     * //     "_id": "63eb79f09f03a5ab644233da",
+     * //     "name": "High Current",
+     * //     "icon": "warning",
+     * //     "shape": "circle",
+     * //     "description": "High Current"
+     * //   },
+     * //   {
+     * //     "color": "#ff77c8",
+     * //     "_id": "64030b81130b12e44089c4ab",
+     * //     "name": "Low Voltage",
+     * //     "icon": "warning",
+     * //     "shape": "circle",
+     * //     "description": "Low Voltage"
+     * //   }
+     * // ]
+     * ```
+     * 
+     * Each category object contains:
+     * - color: Hex color code for visualization
+     * - _id: Unique identifier for the category
+     * - name: Display name of the category
+     * - icon: Icon type (e.g., "warning")
+     * - shape: Shape for visualization (e.g., "circle")
+     * - description: Description of the event category
      */
     try {
       const { onPrem } = options;
@@ -400,8 +532,51 @@ export default class EventsHandler {
     /**
      * Retrieve detailed event data for a specified time range and event tags.
      * 
-     * @param options - Configuration options for retrieving detailed events
-     * @returns A list of detailed event data records
+     * @param options.eventTagsList - Optional array of event tag IDs to filter events
+     * @param options.startTime - Optional start time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.endTime - Optional end time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.onPrem - Optional flag for on-premises server usage
+     * @returns Array of detailed event data records
+     * 
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '63d9138194015538294b6cb4',
+     *   dataUrl: 'datads.iosense.io'
+     * });
+     * 
+     * // First get event categories
+     * const categories = await eventsHandler.getEventCategories();
+     * // Example categories output:
+     * // [
+     * //   {
+     * //     "color": "#ff0000",
+     * //     "_id": "63eb79f09f03a5ab644233da",
+     * //     "name": "High Current",
+     * //     "icon": "warning",
+     * //     "shape": "circle",
+     * //     "description": "High Current"
+     * //   },
+     * //   {
+     * //     "color": "#ff77c8",
+     * //     "_id": "64030b81130b12e44089c4ab",
+     * //     "name": "Low Voltage",
+     * //     "icon": "warning",
+     * //     "shape": "circle",
+     * //     "description": "Low Voltage"
+     * //   }
+     * // ]
+     * 
+     * // Then get detailed events for specific categories
+     * const result = await eventsHandler.getDetailedEvent({
+     *   eventTagsList: ["64030b81130b12e44089c4ab"], // Low Voltage event tag
+     *   startTime: '2025-03-01 07:00:00',
+     *   endTime: '2025-03-30 07:00:00'
+     * });
+     * ```
+     * 
+     * Note: The function uses pagination internally to fetch all available events.
+     * Events are fetched in batches of 1000 records per page until all data is retrieved.
      */
     try {
       const { eventTagsList, startTime, endTime, onPrem } = options;
@@ -507,29 +682,80 @@ export default class EventsHandler {
   async getMongoData(options: MongoDataOptions): Promise<any[]> {
     /**
      * Retrieves data rows for a specific device from the custom table (MongoDB) with optional filtering.
-     * Uses the /api/table/getRows3 endpoint as specified in the API documentation.
      * 
      * @param options.devID - Required device identifier
      * @param options.limit - Optional limit on number of rows to return
      * @param options.startTime - Optional start time filter in format "YYYY-MM-DD HH:mm:ss"
      * @param options.endTime - Optional end time filter in format "YYYY-MM-DD HH:mm:ss"
      * @param options.onPrem - Optional flag for on-premises server usage
-     * @returns Array of data rows for the specified device
-     * Example:
-     * [{
-     *   _id: '67a98e7ba5b75209f9a85a0d',
-     *   devID: 'Planwise_Production_01',
-     *   data: {
-     *     D0: 'nan',
-     *     D1: 1739165220000,
-     *     D2: '40000',
-     *     F1: 'IMM-11',
-     *     F2: 'RIO FRONT',
-     *     F3: 'Planned',
-     *     D52: '2025-03-04 13:13:43',
-     *     D53: ...
-     *   }
-     * }]
+     * @returns Array of data rows with the following structure:
+     * ```typescript
+     * Array<{
+     *   _id: string;           // MongoDB document ID
+     *   devID: string;         // Device identifier
+     *   data: {                // Device data fields
+     *     D0: string;         // Start time
+     *     D1: string;         // End time
+     *     D2: string;         // Status (e.g., "Production", "Downtime")
+     *     D3: string;         // Sub-status or reason
+     *     D6: string;         // Efficiency value
+     *     D7: string | number; // Total time
+     *     D8: string | number; // Production time
+     *     D9: string | number; // Downtime
+     *     D10: string;        // Efficiency percentage
+     *     D11: string | number; // Quality value
+     *     D12: string;        // Date
+     *     D13: string;        // Shift
+     *     D14: string;        // Additional status
+     *     D52: string;        // Counter
+     *     D53: string;        // Additional info
+     *     fromVMS: boolean;   // VMS flag
+     *   };
+     *   createdAt: string;     // Record creation timestamp
+     * }>
+     * ```
+     * 
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '6710eea3340f9be7ffa61634',
+     *   dataUrl: 'datads.iosense.io'
+     * });
+     * 
+     * const result = await eventsHandler.getMongoData({
+     *   devID: 'HHPLOEE_C2_T_Timeline_E',
+     *   limit: 4,
+     *   startTime: '2025-03-01 07:00:00',
+     *   endTime: '2025-03-30 07:00:00'
+     * });
+     * 
+     * // Example output:
+     * // [
+     * //   {
+     * //     "_id": "67e8bd963222fc09dfa21f1f",
+     * //     "devID": "HHPLOEE_C2_T_Timeline_E",
+     * //     "data": {
+     * //       "D0": "2025-03-30 07:00:00",
+     * //       "D1": "2025-03-30 09:09:10",
+     * //       "D2": "Downtime",
+     * //       "D3": "",
+     * //       "D6": "0.00",
+     * //       "D7": "7750.0",
+     * //       "D8": "0.0",
+     * //       "D9": "7750.0",
+     * //       "D10": "0.00",
+     * //       "D11": "nan",
+     * //       "D12": "2025-03-29",
+     * //       "D13": "A",
+     * //       "D14": "0",
+     * //       "D52": "0",
+     * //       "D53": "",
+     * //       "fromVMS": false
+     * //     },
+     * //     "createdAt": "2025-03-30T03:42:14.678Z"
+     * //   }
+     * // ]
+     * ```
      */
     try {
       const { devID, limit, startTime, endTime, onPrem } = options;
@@ -553,6 +779,55 @@ export default class EventsHandler {
   async getMaintenanceModuleData(options: MaintenanceModuleDataOptions): Promise<Record<string, any>> {
     /**
      * Fetch maintenance module data based on the provided parameters.
+     * 
+     * @param options - Configuration options for retrieving maintenance data
+     * @param options.startTime - Start time in Unix timestamp (milliseconds) or date string
+     * @param options.endTime - End time in Unix timestamp (milliseconds) or date string
+     * @param options.remarkGroup - Array of remark group IDs to filter by
+     * @param options.eventId - Array of event IDs to filter by
+     * @param options.maintenanceModuleId - ID of the maintenance module
+     * @param options.operator - Type of operation to perform ('count' | 'activeDuration' | 'inactiveDuration')
+     * @param options.dataPrecision - Number of decimal places in the result
+     * @param options.periodicity - Time period for data aggregation ('hour' | 'day' | 'week' | 'month' | 'quarter' | 'year')
+     * @param options.onPrem - Optional flag for on-premises server usage
+     * @returns Object with timestamps as keys and corresponding values
+     * 
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '64807e6560fc9faa38fc3236',
+     *   dataUrl: 'datads.iosense.io'
+     * });
+     * 
+     * const result = await eventsHandler.getMaintenanceModuleData({
+     *   startTime: 1735669800000,  // Unix timestamp for start date
+     *   endTime: 1737829800000,    // Unix timestamp for end date
+     *   operator: 'activeDuration',
+     *   periodicity: 'day',
+     *   dataPrecision: 1,
+     *   remarkGroup: ['65145a2193d952b0647c010e'],
+     *   eventId: ['651427e73750210f67f06a17'],
+     *   maintenanceModuleId: '677e4316bc3ef30aec6ed933'
+     * });
+     * 
+     * // Example output:
+     * // {
+     * //   "2024-12-31T18:30:00Z": 0,
+     * //   "2025-01-01T18:30:00Z": 0,
+     * //   "2025-01-07T18:30:00Z": 31308.6,  // Partial day
+     * //   "2025-01-08T18:30:00Z": 86400,    // Full day (24 hours in seconds)
+     * //   "2025-01-13T18:30:00Z": 64910.7,  // Partial day
+     * //   "2025-01-22T18:30:00Z": 8.4,      // Short duration
+     * //   "2025-01-23T18:30:00Z": 0
+     * // }
+     * ```
+     * 
+     * The returned object contains:
+     * - Keys: ISO timestamps representing the start of each period
+     * - Values: Duration in seconds (for activeDuration/inactiveDuration) or count (for count operator)
+     *   - 0: No activity during that period
+     *   - 86400: Full day of activity (24 hours in seconds)
+     *   - Other values: Partial duration of activity
      */
     try {
       const {
@@ -686,7 +961,7 @@ export default class EventsHandler {
      * Fetch device data from the API with optional filters for time range and device list.
      */
     try {
-      const { devices, n = 5000, endTime, startTime, onPrem } = options;
+      const { devices, n = 5000,startTime,endTime, onPrem } = options;
 
       const url = this.formatUrl(GET_DEVICE_DATA, onPrem);
       const payload = {
@@ -734,6 +1009,49 @@ export default class EventsHandler {
   async getDeviceMetadata(deviceId: string, onPrem?: boolean): Promise<Record<string, any>> {
     /**
      * Fetches metadata for a specific device.
+     *
+     * @param deviceId - The device identifier
+     * @param onPrem - Optional flag for on-premises server usage
+     * @returns An object where each key is a sensor/data channel (e.g., D0, D1, Status, RSSI),
+     *          and the value is an array of objects describing the variable and its display label.
+     *
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '63d9138194015538294b6cb4',
+     *   dataUrl: 'datads.iosense.io'
+     * });
+     * 
+     * const metadata = await eventsHandler.getDeviceMetadata('PPAPEM_G8');
+     * // Example output:
+     * // {
+     * //   "D0": [
+     * //     { "customShow": "Raw Variable", "customVariable": "PPAPEM_G8_D0" },
+     * //     { "customShow": "Processed Reading", "customVariable": "1*PPAPEM_G8_D0+0" }
+     * //   ],
+     * //   "D34": [
+     * //     { "customShow": "Raw Variable", "customVariable": "PPAPEM_G8_D34" },
+     * //     { "customShow": "Processed Reading", "customVariable": "1*PPAPEM_G8_D34+0" }
+     * //   ],
+     * //   "Status": [
+     * //     { "customShow": "Raw Variable", "customVariable": "PPAPEM_G8_Status" },
+     * //     { "customShow": "Processed Reading", "customVariable": "1*PPAPEM_G8_Status+0" }
+     * //   ],
+     * //   "RSSI": [
+     * //     { "customShow": "Raw Variable", "customVariable": "PPAPEM_G8_RSSI" },
+     * //     { "customShow": "Processed Reading", "customVariable": "1*PPAPEM_G8_RSSI+0" }
+     * //   ]
+     * // }
+     * ```
+     *
+     * Each key (e.g., D0, D34, Status, RSSI) represents a sensor or data channel.
+     * Each value is an array containing two objects:
+     *   - First object: Raw variable information
+     *     - customShow: Label for the raw variable
+     *     - customVariable: The raw variable name
+     *   - Second object: Processed reading information
+     *     - customShow: Label for the processed reading
+     *     - customVariable: The formula for calculating the processed reading
      */
     try {
       const url = this.formatUrl(GET_DEVICE_METADATA_MONGO_URL, onPrem);

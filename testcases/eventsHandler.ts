@@ -40,12 +40,13 @@ async function exampleUsage() {
 
     // Example 3: Get events in a time slot
     console.log('3. Fetching events in time slot (last 24 hours)...');
-    const startTime = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
-    const endTime = new Date(); // Now
+    const startTime = '2025-03-01 07:00:00'//new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+    const endTime ='2025-03-02 07:00:00' //new Date(); // Now
     const events = await eventsHandler.getEventsInTimeslot({
       startTime,
       endTime
     });
+
     console.log(`Found ${events.length} events in the last 24 hours`);
     if (events.length > 0) {
       console.log('Latest event:', events[0]);
