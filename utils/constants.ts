@@ -31,6 +31,11 @@ export const TRIGGER_URL: string = '{protocol}://{data_url}/api/expression-sched
 export const CLUSTER_AGGREGATION: string = '{protocol}://{data_url}/api/widget/clusterData';
 export const GET_FILTERED_OPERATION_DATA: string = '{protocol}://{data_url}/api/consumption/getOperationDataWithTime';
 
+/* ----------------------------- BRUCE HANDLER ------------------------------ */
+export const FETCH_USER_INSIGHTS_URL: string = '{protocol}://{data_url}/api/bruce/userInsight/fetch/paginated';
+export const GET_SOURCE_INSIGHT_URL: string = '{protocol}://{data_url}/api/bruce/userInsight/fetch/getSourceInsight/{insight_id}';
+export const FETCH_INSIGHT_RESULTS_URL: string = '{protocol}://{data_url}/api/bruce/insightResult/fetch/paginated/{insight_id}';
+
 /* ----------------------------- EVENTS HANDLER ----------------------------- */
 export const PUBLISH_EVENT_URL: string = '{protocol}://{data_url}/api/eventTag/publishEvent';
 export const GET_EVENTS_IN_TIMESLOT_URL: string = '{protocol}://{data_url}/api/eventTag/fetchEvents/timeslot';

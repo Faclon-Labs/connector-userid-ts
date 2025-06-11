@@ -5,12 +5,10 @@ import {
   GET_EVENT_DATA_COUNT_URL,
   GET_EVENT_CATEGORIES_URL,
   GET_DETAILED_EVENT_URL,
-  GET_MONGO_DATA,
   GET_MAINTENANCE_MODULE_DATA,
   GET_DEVICE_DATA,
   GET_SENSOR_ROWS,
   GET_DEVICE_METADATA_MONGO_URL,
-  CREATE_MONGO_ROWS_URL,
   Protocol,
   VERSION
 } from '../utils/constants.js';
@@ -55,14 +53,6 @@ export interface DetailedEventOptions {
   onPrem?: boolean;
 }
 
-export interface MongoDataOptions {
-  devID: string;
-  limit?: number;
-  startTime?: string;
-  endTime?: string;
-  onPrem?: boolean;
-}
-
 export interface MaintenanceModuleDataOptions {
   startTime: number | string | Date;
   endTime?: number | string | Date;
@@ -97,11 +87,6 @@ export interface SensorRowsOptions {
   endTime?: string;
   startTime?: string;
   alias?: boolean;
-  onPrem?: boolean;
-}
-
-export interface CreateMongoRowsOptions {
-  data: any; // Dynamic JSON data provided by end users
   onPrem?: boolean;
 }
 
@@ -501,52 +486,6 @@ export default class EventsHandler {
         console.error(`[EXCEPTION] ${error.message || error}`);
       }
       throw error;
-    }
-  }
-
-  async getMongoData(options: MongoDataOptions): Promise<any[]> {
-    /**
-     * Retrieves data rows for a specific device from the custom table (MongoDB) with optional filtering.
-     * Uses the /api/table/getRows3 endpoint as specified in the API documentation.
-     * 
-     * @param options.devID - Required device identifier
-     * @param options.limit - Optional limit on number of rows to return
-     * @param options.startTime - Optional start time filter in format "YYYY-MM-DD HH:mm:ss"
-     * @param options.endTime - Optional end time filter in format "YYYY-MM-DD HH:mm:ss"
-     * @param options.onPrem - Optional flag for on-premises server usage
-     * @returns Array of data rows for the specified device
-     * Example:
-     * [{
-     *   _id: '67a98e7ba5b75209f9a85a0d',
-     *   devID: 'Planwise_Production_01',
-     *   data: {
-     *     D0: 'nan',
-     *     D1: 1739165220000,
-     *     D2: '40000',
-     *     F1: 'IMM-11',
-     *     F2: 'RIO FRONT',
-     *     F3: 'Planned',
-     *     D52: '2025-03-04 13:13:43',
-     *     D53: ...
-     *   }
-     * }]
-     */
-    try {
-      const { devID, limit, startTime, endTime, onPrem } = options;
-
-      const url = this.formatUrl(GET_MONGO_DATA, onPrem);
-      const payload = {
-        devID,
-        ...(limit && { limit, rawData: true }),
-        ...(startTime && { startTime }),
-        ...(endTime && { endTime })
-      };
-
-      return await this.getPaginatedData(url, payload, false);
-
-    } catch (error: any) {
-      console.error(`[EXCEPTION] ${error.message || error}`);
-      return [];
     }
   }
 

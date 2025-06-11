@@ -88,25 +88,6 @@ async function exampleUsage() {
       console.log('Device metadata fetch failed (device may not exist):', error.message);
     }
 
-    // NEW: Example 7: Get MongoDB Data - Various Test Cases
-    console.log('\n=== MongoDB Data Test Cases ===');
-    
-    // Test Case 7: Basic getMongoData test
-    console.log('7. Testing getMongoData...');
-    try {
-      const mongoData = await eventsHandler.getMongoData({
-        devID: "Planwise_Production_01",
-        limit: 5
-      });
-      console.log(`✓ getMongoData test: Retrieved ${mongoData.length} records`);
-      if (mongoData.length > 0) {
-        console.log('Sample record:', mongoData[0]);
-      }
-    } catch (error: any) {
-      console.log('✗ getMongoData test failed:', error.message);
-    }
-
-    console.log('\n=== MongoDB Data Tests Completed ===');
     console.log('\n=== EventsHandler Test Suite Completed ===');
 
   } catch (error) {
