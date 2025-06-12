@@ -15,6 +15,7 @@ import {
   VERSION
 } from '../utils/constants.js';
 import DataAccess from './DataAccess.js';
+import { start } from 'repl';
 
 // Type definitions for EventsHandler
 export interface EventsHandlerConfig {
@@ -654,16 +655,28 @@ export default class EventsHandler {
       const response = await axios.put(url, payload, { 
         headers: { userID: this.userId } 
       });
+  
+      // DEBUG: Log the actual response structure
+      console.log('Response structure:', JSON.stringify(response.data, null, 2));
+
 
       if (this.logTime) {
         const duration = (Date.now() - startTime) / 1000;
         console.log(`[NETWORK] API ${url} response time: ${duration.toFixed(4)} seconds`);
       }
 
-      const data = response.data.data;
-
-      if (data) {
-        return parallel ? (data.rows || {}) : data;
+      // For device data endpoint, the structure is different
+      if (url.includes('getRowsByDevices')) {
+        const responseData = response.data;
+        if (responseData && responseData.rows) {
+          return responseData.rows;  // Return rows directly like Python version
+        }
+      } else {
+        // Keep original logic for other endpoints
+        const data = response.data.data;
+        if (data) {
+          return parallel ? (data.rows || {}) : data;
+        }
       }
 
       throw new Error('Invalid response format');
@@ -689,6 +702,20 @@ export default class EventsHandler {
      * @param options.endTime - Optional end time filter in format "YYYY-MM-DD HH:mm:ss"
      * @param options.onPrem - Optional flag for on-premises server usage
      * @returns Array of data rows with the following structure:
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '671061634',
+     *   dataUrl: 'datase.io'
+     * });
+     * 
+     * const result = await eventsHandler.getMongoData({
+     *   devID: 'H_E',
+     *   limit: 4,
+     *   startTime: '2025-03-01 07:00:00',
+     *   endTime: '2025-03-30 07:00:00'
+     * });
+     * 
      * ```typescript
      * Array<{
      *   _id: string;           // MongoDB document ID
@@ -713,48 +740,6 @@ export default class EventsHandler {
      *   };
      *   createdAt: string;     // Record creation timestamp
      * }>
-     * ```
-     * 
-     * @example
-     * ```typescript
-     * const eventsHandler = new EventsHandler({
-     *   userId: '67109be7ffa61634',
-     *   dataUrl: 'datase.io'
-     * });
-     * 
-     * const result = await eventsHandler.getMongoData({
-     *   devID: 'HHPLOTimeline_E',
-     *   limit: 4,
-     *   startTime: '2025-03-01 07:00:00',
-     *   endTime: '2025-03-30 07:00:00'
-     * });
-     * 
-     * // Example output:
-     * // [
-     * //   {
-     * //     "_id": "67e8bddfa21f1f",
-     * //     "devID": "HHPLimeline_E",
-     * //     "data": {
-     * //       "D0": "2025-03-30 07:00:00",
-     * //       "D1": "2025-03-30 09:09:10",
-     * //       "D2": "Downtime",
-     * //       "D3": "",
-     * //       "D6": "0.00",
-     * //       "D7": "7750.0",
-     * //       "D8": "0.0",
-     * //       "D9": "7750.0",
-     * //       "D10": "0.00",
-     * //       "D11": "nan",
-     * //       "D12": "2025-03-29",
-     * //       "D13": "A",
-     * //       "D14": "0",
-     * //       "D52": "0",
-     * //       "D53": "",
-     * //       "fromVMS": false
-     * //     },
-     * //     "createdAt": "2025-03-30T03:42:14.678Z"
-     * //   }
-     * // ]
      * ```
      */
     try {
@@ -802,12 +787,12 @@ export default class EventsHandler {
      * const result = await eventsHandler.getMaintenanceModuleData({
      *   startTime: 1735669800000,  // Unix timestamp for start date
      *   endTime: 1737829800000,    // Unix timestamp for end date
-     *   operator: 'activeDuration',
-     *   periodicity: 'day',
+     *   operator: '', //string for operator
+     *   periodicity: '', // periodicity
      *   dataPrecision: 1,
-     *   remarkGroup: ['65145ab0647c010e'],
-     *   eventId: ['651427e73767f06a17'],
-     *   maintenanceModuleId: '677e431f30aec6ed933'
+     *   remarkGroup: [''], // array
+     *   eventId: [''], array
+     *   maintenanceModuleId: ''  // id for maintainance module
      * });
      * 
      * // Example output:
@@ -819,6 +804,7 @@ export default class EventsHandler {
      * //   "2025-01-13T18:30:00Z": 64910.7,  // Partial day
      * //   "2025-01-22T18:30:00Z": 8.4,      // Short duration
      * //   "2025-01-23T18:30:00Z": 0
+     * //   ....                   // more values can be present
      * // }
      * ```
      * 
@@ -956,21 +942,84 @@ export default class EventsHandler {
     throw new Error(`Invalid time format: ${time}`);
   }
 
+  /**
+   * Fetch device data from the API with optional filters for time range and device list.
+   *
+   * @param options - Configuration options for retrieving device data
+   * @returns Array of device data records
+   *
+   * @example
+   * ```typescript
+   * const eventsHandler = new EventsHandler({
+   *   userId: 'your-user-id',
+   *   dataUrl: 'your-data-url',
+   *   onPrem: false,
+   *   tz: 'UTC'
+   * });
+   *
+   * const result = await eventsHandler.getDeviceData({
+   *   devices: ["device1", "device2"],
+   *   startTime: "2025-01-27 07:00:00",
+   *   endTime: "2025-01-28 06:59:59"
+   * });
+   *
+   * // Example output structure:
+   * // [
+   * //   {
+   * //     _id: "record-id-1",
+   * //     devID: "device1",
+   * //     data: {
+   * //       D0: "start-time",
+   * //       D1: "end-time",
+   * //       D2: "status",
+   * //       D3: "reason",
+   * //       D6: "value1",
+   * //       D7: "value2",
+   * //       ... // more fields
+   * //       fromVMS: false
+   * //     }
+   * //   },
+   * //   {
+   * //     _id: "record-id-2",
+   * //     devID: "device2",
+   * //     data: {
+   * //       D0: "start-time",
+   * //       D1: "end-time",
+   * //       D2: "status",
+   * //       D3: "reason",
+   * //       D6: "value1",
+   * //       D7: "value2",
+   * //       ... // more fields
+   * //       fromVMS: false
+   * //     }
+   * //   }
+   * // ]
+   * ```
+   *
+   * Each record contains:
+   * - _id: Unique identifier for the record
+   * - devID: Device identifier
+   * - data: Object with device data fields (D0, D1, D2, ...), including status, times, and other metrics
+   *   - fromVMS: boolean flag
+   */
   async getDeviceData(options: DeviceDataOptions = {}): Promise<any[]> {
-    /**
-     * Fetch device data from the API with optional filters for time range and device list.
-     */
     try {
-      const { devices, n = 5000,startTime,endTime, onPrem } = options;
+      const { devices, n = 5000, startTime, endTime, onPrem } = options;
 
       const url = this.formatUrl(GET_DEVICE_DATA, onPrem);
-      const payload = {
+      const payload: any = {
         devices,
-        n,
-        endTime,
-        startTime
+        page: 1,
+        limit: n,
+        rawData: true,
       };
-
+      if (startTime) {
+        payload.startTime = startTime;
+      }
+      
+      if (endTime) {
+        payload.endTime = endTime;
+      }
       const data = await this.getPaginatedData(url, payload, false);
       return data;
 
@@ -980,27 +1029,120 @@ export default class EventsHandler {
     }
   }
 
+  /**
+   * Retrieve device data rows from the server based on sensor parameters and optional time range filters.
+   *
+   * @param options - Configuration options for retrieving sensor rows
+   * @returns Array of sensor data records
+   *
+   * @example
+   * ```typescript
+   * const eventsHandler = new EventsHandler({
+   *   userId: 'your-user-id',
+   *   dataUrl: 'your-data-url',
+   *   onPrem: false,
+   *   tz: 'UTC'
+   * });
+   *
+   * const result = await eventsHandler.getSensorRows({
+   *   deviceId: 'PHEXT_L1ne',
+   *   sensor: 'D0',
+   *   value: '2025-05-08 12:49:53',
+   *   startTime: '2025-05-08 12:00:00',
+   *   endTime: '2025-05-08 14:00:00'
+   * });
+   *
+   * // Example output (partial):
+   * // [
+   * //   {
+   * //     _id: "",
+   * //     devID: "",
+   * //     data: {
+   * //       D0: "2025-05-08 12:49:53",
+   * //       D1: "2025-05-08 12:59:39",
+   * //       D2: "Downtime",
+   * //       D3: "MC Setting Time",
+   * //       D4: "220044",
+   * //       D5: "800033.0",
+   * //       D6: "0.00",
+   * //       D7: "586.0",
+   * //       ... // more fields
+   * //       fromVMS: false
+   * //     }
+   * //   },
+   * //   {
+   * //     _id: "", // id for the user
+   * //     devID: "",  // device ID
+   * //     data: {
+   * //       D0: "2025-05-08 12:59:39",
+   * //       D1: "2025-05-08 13:18:01",
+   * //       D2: "Downtime",
+   * //       D3: "Lunch/Breakfast",
+   * //       D4: "220044",
+   * //       D5: "800033.0",
+   * //       D6: "0.00",
+   * //       D7: "1102.0",
+   * //       ... // more fields
+   * //       fromVMS: false
+   * //     }
+   * //   }
+   * // ]
+   * ```
+   *
+   * Each record contains:
+   * - _id: Unique identifier for the record
+   * - devID: Device identifier
+   * - data: Object with sensor data fields (D0, D1, D2, ...), including status, times, and other metrics
+   *   - fromVMS: boolean flag
+   */
   async getSensorRows(options: SensorRowsOptions): Promise<any[]> {
-    /**
-     * Retrieve device data rows from the server based on sensor parameters and optional time range filters.
-     */
     try {
       const { deviceId, sensor, value, endTime, startTime, alias = false, onPrem } = options;
-
+  
       const url = this.formatUrl(GET_SENSOR_ROWS, onPrem);
-      const payload = {
-        deviceId,
-        sensor,
-        value,
-        endTime,
-        startTime,
-        alias
+      
+      // Match Python payload structure exactly
+      const params: any = {
+        devID: deviceId,    // Python uses "devID"
+        key: sensor,        // Python uses "key" 
+        value: value
       };
-
-      const data = await this.getPaginatedData(url, payload, false);
-      return data;
-
+  
+      // Use Python's time parameter names
+      if (startTime) {
+        params.sTime = startTime;  // Python uses "sTime"
+      }
+      
+      if (endTime) {
+        params.eTime = endTime;    // Python uses "eTime"
+      }
+  
+      // GET request logic (matching Python's requests.get)
+      const requestStartTime = Date.now();
+      const response = await axios.get(url, { 
+        params: params,  // Send as query parameters for GET
+        headers: { userID: this.userId } 
+      });
+  
+      if (this.logTime) {
+        const duration = (Date.now() - requestStartTime) / 1000;
+        console.log(`[NETWORK] API ${url} response time: ${duration.toFixed(4)} seconds`);
+      }
+  
+      const responseData = response.data;
+      if (responseData && responseData.data) {
+        return responseData.data;  // Python expects response.data
+      }
+  
+      throw new Error('Invalid response format');
+  
     } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = this.errorMessage(error.response, error.config?.url || 'unknown');
+        console.error(`[EXCEPTION] ${error.name}: ${errorMessage}`);
+      } else {
+        console.error(`[EXCEPTION] ${error.message || error}`);
+      }
       console.error(`[EXCEPTION] ${error.message || error}`);
       return [];
     }
@@ -1018,8 +1160,8 @@ export default class EventsHandler {
      * @example
      * ```typescript
      * const eventsHandler = new EventsHandler({
-     *   userId: '63d938294b6cb4',
-     *   dataUrl: 'datadense.io'
+     *   userId: '',   // the id for the user
+     *   dataUrl: 'date.io'  // the data url 
      * });
      * 
      * const metadata = await eventsHandler.getDeviceMetadata('PPA_G8');

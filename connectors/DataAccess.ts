@@ -480,7 +480,7 @@ export default class DataAccess {
 
   /**
    * Fetches user info from the API using axios.
-   * @param onPremOverride - Whether to override the onPrem flag.
+   * @param onPremOverride - Whether to   override the onPrem flag.
    * @returns User info object with the following structure:
    * ```typescript
    * {
@@ -528,14 +528,14 @@ export default class DataAccess {
    * 
    * // Example output:
    * // {
-   * //   "_id": "645a159222722a319ca5f5ad",
-   * //   "email": "datascience@faclon.com",
+   * //   "_id": "",
+   * //   "email": "",
    * //   "organisation": {
-   * //     "_id": "5b0d386f82d7525268dfbe06",
-   * //     "orgID": "Faclon_Labs",
-   * //     "orgName": "Faclon Labs",
-   * //     "hostname": "iosense.io",
-   * //     "phone": 9833429903
+   * //     "_id": "",
+   * //     "orgID": "Facabs",
+   * //     "orgName": "Faabs",
+   * //     "hostname": "ios.io",
+   * //     "phone": 
    * //   },
    * //   "timeCreated": "2023-05-09T09:42:42.189Z",
    * //   "userDetail": {
@@ -546,16 +546,16 @@ export default class DataAccess {
    * //       },
    * //       "phone": {
    * //         "number": "9005900762",
-   * //         "internationalNumber": "+91 9005900762",
+   * //         "internationalNumber": "",
    * //         "dialCode": "91",
    * //         "countryCode": "in",
-   * //         "e164Number": "+919005900762",
+   * //         "e164Number": "",
    * //         "name": "India"
    * //       },
    * //       "profilePicUrl": "",
    * //       "gender": "male"
    * //     },
-   * //     "_id": "645a159222722a319ca5f5b0"
+   * //     "_id": ""
    * //   }
    * // }
    * ```
@@ -645,15 +645,7 @@ export default class DataAccess {
    * //   }
    * // ]
    * ```
-   * 
-   * Common device types include:
-   * - TEMP_HMD_BAT: Temperature and Humidity sensors
-   * - ENERGY039: Energy meters
-   * - ENERGY456: Advanced energy meters
-   * - CUSTOM_SECTIONS_01: Custom device types
-   * - PAC2COMP: PAC devices
-   * - VDNTAAHU: AHU devices
-   * - IMWM_EM: Industrial water meters
+
    * 
    * @throws Error if an error occurs during the HTTP request, such as a network issue or timeout.
    * @throws Error if an unexpected error occurs during metadata retrieval, such as parsing JSON data or other unexpected issues.
@@ -742,69 +734,7 @@ export default class DataAccess {
    * }
    * ```
    * 
-   * @example
-   * ```typescript
-   * const dataAccess = new DataAccess({
-   *   userId: '645a15922***',
-   *   dataUrl: 'data*****s',
-   *   dsUrl: 'ds-serv*****sen'
-   * });
-   * 
-   * const metadata = await dataAccess.getDeviceMetaData('DS_TEST_DATA_POSTING');
-   * 
-   * // Example output:
-   * // {
-   * //  "location": {
-   * //  "latitude": 6,
-   * //  "longitude": -5
-   * //  },
-   * //  "tags": [
-   * //    "DS_TEST_DATA_POSTING"
-   * //  ],
-   * //  "addedOn": "2024-03-12T09:43:13.311Z",
-   * //  "widgets": [],
-   * //   "_id": "65f023b10890538de3550f23",
-   * //   "devID": "DS_TEST_DATA_POSTING",
-   * //   "devName": "DS_TEST_DATA_POSTING",
-   * //   "devTypeID": "ENERGY456",
-   * //   "devTypeName": "Energymeter",
-   * //   "sensors": [
-   * //     {
-   * //       "sensorId": "AVT",
-   * //       "sensorName": "Line Voltage",
-   * //       "globalName": "Line Voltage"
-   * //     },
-   * //     {
-   * //       "sensorId": "ACR",
-   * //       "sensorName": "Average Current",
-   * //       "globalName": "Average Current"
-   * //     }
-   * //   ],
-   * //   "location": {
-   * //     "latitude": 6,
-   * //     "longitude": -5
-   * //   },
-   * //   "params": {
-   * //     "AVT": [
-   * //       {
-   * //         "paramName": "m",
-   * //         "paramValue": ".03"
-   * //       },
-   * //       {
-   * //         "paramName": "c",
-   * //         "paramValue": 0
-   * //       }
-   * //     ]
-   * //   },
-   * //   "unit": {
-   * //     "AVT": ["V"],
-   * //     "ACR": ["AMP"]
-   * //   },
-   * //   "unitSelected": {
-   * //     "AVT": "V",
-   * //     "ACR": "AMP"
-   * //   }
-   * // }
+
    * ```
    * 
    * @throws Error if an error occurs during the HTTP request, such as a network issue or timeout.
@@ -884,7 +814,7 @@ export default class DataAccess {
    * 
    * // Get first datapoint for specific sensors after a given time
    * const result = await dataAccess.getFirstDp({
-   *   deviceId: 'UT2312EM_A2',
+   *   deviceId: 'tvhf',
    *   sensorList: ["D5", "D13"],
    *   n: 1,
    *   startTime: 1687344669000,
@@ -1023,7 +953,7 @@ export default class DataAccess {
    * 
    * // Get last 2 datapoints for all sensors
    * const result = await dataAccess.getDp({
-   *   deviceId: 'DS_TEST_DATA_POSTING',
+   *   deviceId: 'DS_TEST_STING',
    *   sensorList: null,
    *   n: 2,
    *   endTime: 1717180320000,
@@ -1198,7 +1128,7 @@ export default class DataAccess {
    * 
    * // Query data for specific sensors over a time range
    * const result = await dataAccess.dataQuery({
-   *   deviceId: 'DS_TEST_DATA_POSTING',
+   *   deviceId: 'DS_TEST_DTING',
    *   sensorList: ['AVT', 'ACR'],  // Line Voltage and Average Current sensors
    *   startTime: 1718102400000,    // April 10, 2024 00:00:00 UTC
    *   endTime: 1718188800000,      // April 11, 2024 00:00:00 UTC
@@ -1445,7 +1375,7 @@ export default class DataAccess {
    * // [
    * //   {
    * //     "name": "Energy Consumption ( HT )",
-   * //     "id": "647efd403def74e774156162",
+   * //     "id": "647efd40162",
    * //     "devConfigs": [
    * //       {
    * //         "devId": "APREM_A1",
