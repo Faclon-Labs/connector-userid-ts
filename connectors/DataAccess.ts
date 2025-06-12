@@ -622,9 +622,9 @@ export default class DataAccess {
    * @example
    * ```typescript
    * const dataAccess = new DataAccess({
-   *   userId: '645a15922****a319ca5f5ad',
-   *   dataUrl: 'data*****sense.io',
-   *   dsUrl: 'ds-serv*****sense.io'
+   *   userId: '645a15922****',
+   *   dataUrl: 'data*****se',
+   *   dsUrl: 'ds-serv*****se'
    * });
    * 
    * const devices = await dataAccess.getDeviceDetails();
@@ -745,9 +745,9 @@ export default class DataAccess {
    * @example
    * ```typescript
    * const dataAccess = new DataAccess({
-   *   userId: '645a15922****a319ca5f5ad',
-   *   dataUrl: 'data*****sense.io',
-   *   dsUrl: 'ds-serv*****sense.io'
+   *   userId: '645a15922***',
+   *   dataUrl: 'data*****s',
+   *   dsUrl: 'ds-serv*****sen'
    * });
    * 
    * const metadata = await dataAccess.getDeviceMetaData('DS_TEST_DATA_POSTING');
@@ -877,9 +877,9 @@ export default class DataAccess {
    * @example
    * ```typescript
    * const dataAccess = new DataAccess({
-   *   userId: '645a15922****a319ca5f5ad',
-   *   dataUrl: 'data*****sense.io',
-   *   dsUrl: 'ds-serv*****sense.io'
+   *   userId: '645a15922****',
+   *   dataUrl: 'data*****',
+   *   dsUrl: 'ds-serv*****'
    * });
    * 
    * // Get first datapoint for specific sensors after a given time
@@ -1016,9 +1016,9 @@ export default class DataAccess {
    * @example
    * ```typescript
    * const dataAccess = new DataAccess({
-   *   userId: '645a15*******a319ca5f5ad',
-   *   dataUrl: 'datad*****nse.io',
-   *   dsUrl: 'ds-ser****.iosense.io'
+   *   userId: '645a15*******',
+   *   dataUrl: 'datad*****',
+   *   dsUrl: 'ds-ser****.'
    * });
    * 
    * // Get last 2 datapoints for all sensors

@@ -275,8 +275,8 @@ export default class EventsHandler {
      * @example
      * ```typescript
      * const eventsHandler = new EventsHandler({
-     *   userId: '63d9138194015538294b6cb4',
-     *   dataUrl: 'datads.iosense.io'
+     *   userId: '63d913894b6cb4',
+     *   dataUrl: 'datae.io'
      * });
      * 
      * const result = await eventsHandler.getEventsInTimeslot({
@@ -286,22 +286,22 @@ export default class EventsHandler {
      * // Example output:
      * // [
      * //   {
-     * //     _id: '67d927fddbd99e864ced1922',
+     * //     _id: '67d927f864ced1922',
      * //     title: 'ALERT: High Current THD',
-     * //     devID: 'PPAPEM_G8',
+     * //     devID: 'PPG8',
      * //     message: 'High Current THD\nDevice:- MDB - UTILITY\nPhase 1 Current THD : 84.6 % ...',
-     * //     eventTags: ['641ab202c02c32f195f7c8e8'],
+     * //     eventTags: ['641ab5f7c8e8'],
      * //     createdOn: '2025-03-18T07:59:57.556Z',
      * //     date: '18/03/2025',
      * //     time: '1:29:57 pm',
      * //     isRead: 'no'
      * //   },
      * //   {
-     * //     _id: '67d8fe55dbd99e5cd9ec8844',
+     * //     _id: '67d8fe55cd9ec8844',
      * //     title: 'ALERT: Low Voltage Alert',
-     * //     devID: 'PPAPEM_P6',
+     * //     devID: 'PPAP6',
      * //     message: 'Low Voltage below 237\nDevice:- LT Panel\nLine to Neutral Voltage: 235.5 V ...',
-     * //     eventTags: ['64030b81130b12e44089c4ab'],
+     * //     eventTags: ['64030b089c4ab'],
      * //     createdOn: '2025-03-18T05:02:13.035Z',
      * //     date: '18/03/2025',
      * //     time: '10:32:13 am',
@@ -377,8 +377,8 @@ export default class EventsHandler {
      * @example
      * ```typescript
      * const eventsHandler = new EventsHandler({
-     *   userId: '63d9138194015538294b6cb4',
-     *   dataUrl: 'datads.iosense.io'
+     *   userId: '63d913294b6cb4',
+     *   dataUrl: 'datadse.io'
      * });
      * 
      * const result = await eventsHandler.getEventDataCount({
@@ -389,11 +389,11 @@ export default class EventsHandler {
      * // Example output:
      * // [
      * //   {
-     * //     "_id": "6489a1159d3b585881814bc2",
+     * //     "_id": "6489a115981814bc2",
      * //     "title": "ALERT: High Voltage Alert",
-     * //     "devID": "PPAPEM_P6",
+     * //     "devID": "PPAP6",
      * //     "message": "Low Voltage above 250\nDevice:- LT Panel\nLine to Neutral Voltage: 244.1 V",
-     * //     "eventTags": ["64030ba6130b12e44089c4c5"],
+     * //     "eventTags": ["64030ba2e44089c4c5"],
      * //     "createdOn": "2023-06-14T11:14:29.500Z",
      * //     "isRead": "yes",
      * //     "date": "14/06/2023",
@@ -463,8 +463,8 @@ export default class EventsHandler {
      * @example
      * ```typescript
      * const eventsHandler = new EventsHandler({
-     *   userId: '63d9138194015538294b6cb4',
-     *   dataUrl: 'datads.iosense.io'
+     *   userId: '63d918294b6cb4',
+     *   dataUrl: 'datase.io'
      * });
      * 
      * const categories = await eventsHandler.getEventCategories();
@@ -472,7 +472,7 @@ export default class EventsHandler {
      * // [
      * //   {
      * //     "color": "#ff0000",
-     * //     "_id": "63eb79f09f03a5ab644233da",
+     * //     "_id": "63eb7644233da",
      * //     "name": "High Current",
      * //     "icon": "warning",
      * //     "shape": "circle",
@@ -480,7 +480,7 @@ export default class EventsHandler {
      * //   },
      * //   {
      * //     "color": "#ff77c8",
-     * //     "_id": "64030b81130b12e44089c4ab",
+     * //     "_id": "64030b44089c4ab",
      * //     "name": "Low Voltage",
      * //     "icon": "warning",
      * //     "shape": "circle",
@@ -541,8 +541,8 @@ export default class EventsHandler {
      * @example
      * ```typescript
      * const eventsHandler = new EventsHandler({
-     *   userId: '63d9138194015538294b6cb4',
-     *   dataUrl: 'datads.iosense.io'
+     *   userId: '63d913294b6cb4',
+     *   dataUrl: 'datnse.io'
      * });
      * 
      * // First get event categories
@@ -551,7 +551,7 @@ export default class EventsHandler {
      * // [
      * //   {
      * //     "color": "#ff0000",
-     * //     "_id": "63eb79f09f03a5ab644233da",
+     * //     "_id": "63ebab644233da",
      * //     "name": "High Current",
      * //     "icon": "warning",
      * //     "shape": "circle",
@@ -559,7 +559,7 @@ export default class EventsHandler {
      * //   },
      * //   {
      * //     "color": "#ff77c8",
-     * //     "_id": "64030b81130b12e44089c4ab",
+     * //     "_id": "64030b8089c4ab",
      * //     "name": "Low Voltage",
      * //     "icon": "warning",
      * //     "shape": "circle",
@@ -569,7 +569,7 @@ export default class EventsHandler {
      * 
      * // Then get detailed events for specific categories
      * const result = await eventsHandler.getDetailedEvent({
-     *   eventTagsList: ["64030b81130b12e44089c4ab"], // Low Voltage event tag
+     *   eventTagsList: ["6403e44089c4ab"], // Low Voltage event tag
      *   startTime: '2025-03-01 07:00:00',
      *   endTime: '2025-03-30 07:00:00'
      * });
@@ -718,12 +718,12 @@ export default class EventsHandler {
      * @example
      * ```typescript
      * const eventsHandler = new EventsHandler({
-     *   userId: '6710eea3340f9be7ffa61634',
-     *   dataUrl: 'datads.iosense.io'
+     *   userId: '67109be7ffa61634',
+     *   dataUrl: 'datase.io'
      * });
      * 
      * const result = await eventsHandler.getMongoData({
-     *   devID: 'HHPLOEE_C2_T_Timeline_E',
+     *   devID: 'HHPLOTimeline_E',
      *   limit: 4,
      *   startTime: '2025-03-01 07:00:00',
      *   endTime: '2025-03-30 07:00:00'
@@ -732,8 +732,8 @@ export default class EventsHandler {
      * // Example output:
      * // [
      * //   {
-     * //     "_id": "67e8bd963222fc09dfa21f1f",
-     * //     "devID": "HHPLOEE_C2_T_Timeline_E",
+     * //     "_id": "67e8bddfa21f1f",
+     * //     "devID": "HHPLimeline_E",
      * //     "data": {
      * //       "D0": "2025-03-30 07:00:00",
      * //       "D1": "2025-03-30 09:09:10",
@@ -795,8 +795,8 @@ export default class EventsHandler {
      * @example
      * ```typescript
      * const eventsHandler = new EventsHandler({
-     *   userId: '64807e6560fc9faa38fc3236',
-     *   dataUrl: 'datads.iosense.io'
+     *   userId: '64807ea38fc3236',
+     *   dataUrl: 'danse.io'
      * });
      * 
      * const result = await eventsHandler.getMaintenanceModuleData({
@@ -805,9 +805,9 @@ export default class EventsHandler {
      *   operator: 'activeDuration',
      *   periodicity: 'day',
      *   dataPrecision: 1,
-     *   remarkGroup: ['65145a2193d952b0647c010e'],
-     *   eventId: ['651427e73750210f67f06a17'],
-     *   maintenanceModuleId: '677e4316bc3ef30aec6ed933'
+     *   remarkGroup: ['65145ab0647c010e'],
+     *   eventId: ['651427e73767f06a17'],
+     *   maintenanceModuleId: '677e431f30aec6ed933'
      * });
      * 
      * // Example output:
@@ -1018,11 +1018,11 @@ export default class EventsHandler {
      * @example
      * ```typescript
      * const eventsHandler = new EventsHandler({
-     *   userId: '63d9138194015538294b6cb4',
-     *   dataUrl: 'datads.iosense.io'
+     *   userId: '63d938294b6cb4',
+     *   dataUrl: 'datadense.io'
      * });
      * 
-     * const metadata = await eventsHandler.getDeviceMetadata('PPAPEM_G8');
+     * const metadata = await eventsHandler.getDeviceMetadata('PPA_G8');
      * // Example output:
      * // {
      * //   "D0": [
