@@ -4,6 +4,8 @@ A TypeScript connector for accessing Faclon IoT platform data with full type saf
 
 ## 🚀 Installation
 
+Install the package from npm:
+
 ```bash
 npm install connector-userid-ts
 # or
@@ -12,11 +14,37 @@ yarn add connector-userid-ts
 pnpm add connector-userid-ts
 ```
 
+### Alternative: Local Development
+
+If you're developing locally or using a private copy:
+
+```bash
+# From a local directory
+npm install ../connector-userid-ts
+
+# Or add to package.json
+{
+  "dependencies": {
+    "connector-userid-ts": "file:../connector-userid-ts"
+  }
+}
+```
+
 ## 📋 Requirements
 
-- Node.js 16+ 
-- TypeScript 4.5+
+- Node.js 18+ 
+- TypeScript 5.0+
 - Modern bundler with ES module support
+
+## 📦 NPM Package
+
+This package is published on npm registry as `connector-userid-ts`. It includes:
+
+- ✅ Pre-compiled TypeScript definitions
+- ✅ ES module support
+- ✅ CommonJS compatibility
+- ✅ Tree-shaking support
+- ✅ Zero external dependencies for core functionality
 
 ## 🔧 Usage
 
@@ -238,6 +266,8 @@ connector-userid-ts/
 
 ## 🔧 Development
 
+### Local Development
+
 ```bash
 # Install dependencies
 npm install
@@ -252,6 +282,25 @@ npm test
 npx tsx testcases/index.ts
 npx tsx testcases/test-load-entities.ts
 ```
+
+### Publishing to NPM
+
+```bash
+# Login to npm (one time setup)
+npm login
+
+# Bump version (patch/minor/major)
+npm version patch
+
+# Publish to npm registry
+npm publish
+```
+
+The package will automatically:
+1. Run tests via `prepublishOnly`
+2. Build TypeScript to `dist/`
+3. Include only necessary files via `files` array
+4. Publish with public access
 
 ## 📄 License
 

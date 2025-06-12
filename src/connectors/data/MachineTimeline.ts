@@ -4,7 +4,7 @@ import {
   CREATE_MONGO_ROWS_URL,
   Protocol,
   VERSION
-} from '../utils/constants.js';
+} from '../../utils/constants.js';
 
 // Type definitions for MachineTimeline
 export interface MachineTimelineConfig {

@@ -5,14 +5,16 @@ import {
   GET_EVENT_DATA_COUNT_URL,
   GET_EVENT_CATEGORIES_URL,
   GET_DETAILED_EVENT_URL,
+  GET_MONGO_DATA,
   GET_MAINTENANCE_MODULE_DATA,
   GET_DEVICE_DATA,
   GET_SENSOR_ROWS,
   GET_DEVICE_METADATA_MONGO_URL,
   Protocol,
   VERSION
-} from '../utils/constants.js';
+} from '../../utils/constants.js';
 import DataAccess from './DataAccess.js';
+import { start } from 'repl';
 
 // Type definitions for EventsHandler
 export interface EventsHandlerConfig {
@@ -53,6 +55,14 @@ export interface DetailedEventOptions {
   onPrem?: boolean;
 }
 
+export interface MongoDataOptions {
+  devID: string;
+  limit?: number;
+  startTime?: string;
+  endTime?: string;
+  onPrem?: boolean;
+}
+
 export interface MaintenanceModuleDataOptions {
   startTime: number | string | Date;
   endTime?: number | string | Date;
@@ -87,6 +97,11 @@ export interface SensorRowsOptions {
   endTime?: string;
   startTime?: string;
   alias?: boolean;
+  onPrem?: boolean;
+}
+
+export interface CreateMongoRowsOptions {
+  data: any; // Dynamic JSON data provided by end users
   onPrem?: boolean;
 }
 
@@ -252,7 +267,59 @@ export default class EventsHandler {
      * Retrieves events within a specified time slot.
      * 
      * @param options - Configuration options for retrieving events
+     * @param options.startTime - Start time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.endTime - End time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.onPrem - Optional flag for on-premises server usage
      * @returns A list of events found within the specified time slot
+     *
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '63d913894b6cb4',
+     *   dataUrl: 'datae.io'
+     * });
+     * 
+     * const result = await eventsHandler.getEventsInTimeslot({
+     *   startTime: "2025-03-18 00:00:00",
+     *   endTime: "2025-03-18 23:59:59"
+     * });
+     * // Example output:
+     * // [
+     * //   {
+     * //     _id: '67d927f864ced1922',
+     * //     title: 'ALERT: High Current THD',
+     * //     devID: 'PPG8',
+     * //     message: 'High Current THD\nDevice:- MDB - UTILITY\nPhase 1 Current THD : 84.6 % ...',
+     * //     eventTags: ['641ab5f7c8e8'],
+     * //     createdOn: '2025-03-18T07:59:57.556Z',
+     * //     date: '18/03/2025',
+     * //     time: '1:29:57 pm',
+     * //     isRead: 'no'
+     * //   },
+     * //   {
+     * //     _id: '67d8fe55cd9ec8844',
+     * //     title: 'ALERT: Low Voltage Alert',
+     * //     devID: 'PPAP6',
+     * //     message: 'Low Voltage below 237\nDevice:- LT Panel\nLine to Neutral Voltage: 235.5 V ...',
+     * //     eventTags: ['64030b089c4ab'],
+     * //     createdOn: '2025-03-18T05:02:13.035Z',
+     * //     date: '18/03/2025',
+     * //     time: '10:32:13 am',
+     * //     isRead: 'no'
+     * //   }
+     * // ]
+     * ```
+     *
+     * Each event object contains:
+     * - _id: Unique event identifier
+     * - title: Event title/alert
+     * - devID: Device identifier
+     * - message: Event message
+     * - eventTags: Array of event tag IDs
+     * - createdOn: Event creation timestamp
+     * - date: Event date (formatted)
+     * - time: Event time (formatted)
+     * - isRead: Read status
      */
     try {
       const { startTime, endTime, onPrem } = options;
@@ -302,7 +369,49 @@ export default class EventsHandler {
      * Retrieve a specified number of event data records up to a given end time.
      * 
      * @param options - Configuration options for retrieving event data count
-     * @returns A list of event data records
+     * @param options.endTime - Optional end time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.count - Optional number of records to return (default: 10, max: 10000)
+     * @param options.onPrem - Optional flag for on-premises server usage
+     * @returns Array of event data records
+     * 
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '63d913294b6cb4',
+     *   dataUrl: 'datadse.io'
+     * });
+     * 
+     * const result = await eventsHandler.getEventDataCount({
+     *   count: 1,
+     *   endTime: "2023-06-14 12:00:00"
+     * });
+     * 
+     * // Example output:
+     * // [
+     * //   {
+     * //     "_id": "6489a115981814bc2",
+     * //     "title": "ALERT: High Voltage Alert",
+     * //     "devID": "PPAP6",
+     * //     "message": "Low Voltage above 250\nDevice:- LT Panel\nLine to Neutral Voltage: 244.1 V",
+     * //     "eventTags": ["64030ba2e44089c4c5"],
+     * //     "createdOn": "2023-06-14T11:14:29.500Z",
+     * //     "isRead": "yes",
+     * //     "date": "14/06/2023",
+     * //     "time": "4:44:29 pm"
+     * //   }
+     * // ]
+     * ```
+     * 
+     * Each event record contains:
+     * - _id: Unique identifier for the event
+     * - title: Event title/alert message
+     * - devID: Device identifier
+     * - message: Detailed event message
+     * - eventTags: Array of event category IDs
+     * - createdOn: Event creation timestamp
+     * - isRead: Read status of the event
+     * - date: Formatted date of the event
+     * - time: Formatted time of the event
      */
     try {
       const { endTime, count = 10, onPrem } = options;
@@ -348,7 +457,45 @@ export default class EventsHandler {
      * Retrieve a list of event categories from the server.
      * 
      * @param options - Configuration options
-     * @returns A list of event categories
+     * @param options.onPrem - Optional flag for on-premises server usage
+     * @returns Array of event categories with their properties
+     * 
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '63d918294b6cb4',
+     *   dataUrl: 'datase.io'
+     * });
+     * 
+     * const categories = await eventsHandler.getEventCategories();
+     * // Example output:
+     * // [
+     * //   {
+     * //     "color": "#ff0000",
+     * //     "_id": "63eb7644233da",
+     * //     "name": "High Current",
+     * //     "icon": "warning",
+     * //     "shape": "circle",
+     * //     "description": "High Current"
+     * //   },
+     * //   {
+     * //     "color": "#ff77c8",
+     * //     "_id": "64030b44089c4ab",
+     * //     "name": "Low Voltage",
+     * //     "icon": "warning",
+     * //     "shape": "circle",
+     * //     "description": "Low Voltage"
+     * //   }
+     * // ]
+     * ```
+     * 
+     * Each category object contains:
+     * - color: Hex color code for visualization
+     * - _id: Unique identifier for the category
+     * - name: Display name of the category
+     * - icon: Icon type (e.g., "warning")
+     * - shape: Shape for visualization (e.g., "circle")
+     * - description: Description of the event category
      */
     try {
       const { onPrem } = options;
@@ -385,8 +532,51 @@ export default class EventsHandler {
     /**
      * Retrieve detailed event data for a specified time range and event tags.
      * 
-     * @param options - Configuration options for retrieving detailed events
-     * @returns A list of detailed event data records
+     * @param options.eventTagsList - Optional array of event tag IDs to filter events
+     * @param options.startTime - Optional start time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.endTime - Optional end time filter in format "YYYY-MM-DD HH:mm:ss"
+     * @param options.onPrem - Optional flag for on-premises server usage
+     * @returns Array of detailed event data records
+     * 
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '63d913294b6cb4',
+     *   dataUrl: 'datnse.io'
+     * });
+     * 
+     * // First get event categories
+     * const categories = await eventsHandler.getEventCategories();
+     * // Example categories output:
+     * // [
+     * //   {
+     * //     "color": "#ff0000",
+     * //     "_id": "63ebab644233da",
+     * //     "name": "High Current",
+     * //     "icon": "warning",
+     * //     "shape": "circle",
+     * //     "description": "High Current"
+     * //   },
+     * //   {
+     * //     "color": "#ff77c8",
+     * //     "_id": "64030b8089c4ab",
+     * //     "name": "Low Voltage",
+     * //     "icon": "warning",
+     * //     "shape": "circle",
+     * //     "description": "Low Voltage"
+     * //   }
+     * // ]
+     * 
+     * // Then get detailed events for specific categories
+     * const result = await eventsHandler.getDetailedEvent({
+     *   eventTagsList: ["6403e44089c4ab"], // Low Voltage event tag
+     *   startTime: '2025-03-01 07:00:00',
+     *   endTime: '2025-03-30 07:00:00'
+     * });
+     * ```
+     * 
+     * Note: The function uses pagination internally to fetch all available events.
+     * Events are fetched in batches of 1000 records per page until all data is retrieved.
      */
     try {
       const { eventTagsList, startTime, endTime, onPrem } = options;
@@ -464,16 +654,28 @@ export default class EventsHandler {
       const response = await axios.put(url, payload, { 
         headers: { userID: this.userId } 
       });
+  
+      // DEBUG: Log the actual response structure
+      console.log('Response structure:', JSON.stringify(response.data, null, 2));
+
 
       if (this.logTime) {
         const duration = (Date.now() - startTime) / 1000;
         console.log(`[NETWORK] API ${url} response time: ${duration.toFixed(4)} seconds`);
       }
 
-      const data = response.data.data;
-
-      if (data) {
-        return parallel ? (data.rows || {}) : data;
+      // For device data endpoint, the structure is different
+      if (url.includes('getRowsByDevices')) {
+        const responseData = response.data;
+        if (responseData && responseData.rows) {
+          return responseData.rows;  // Return rows directly like Python version
+        }
+      } else {
+        // Keep original logic for other endpoints
+        const data = response.data.data;
+        if (data) {
+          return parallel ? (data.rows || {}) : data;
+        }
       }
 
       throw new Error('Invalid response format');
@@ -492,6 +694,56 @@ export default class EventsHandler {
   async getMaintenanceModuleData(options: MaintenanceModuleDataOptions): Promise<Record<string, any>> {
     /**
      * Fetch maintenance module data based on the provided parameters.
+     * 
+     * @param options - Configuration options for retrieving maintenance data
+     * @param options.startTime - Start time in Unix timestamp (milliseconds) or date string
+     * @param options.endTime - End time in Unix timestamp (milliseconds) or date string
+     * @param options.remarkGroup - Array of remark group IDs to filter by
+     * @param options.eventId - Array of event IDs to filter by
+     * @param options.maintenanceModuleId - ID of the maintenance module
+     * @param options.operator - Type of operation to perform ('count' | 'activeDuration' | 'inactiveDuration')
+     * @param options.dataPrecision - Number of decimal places in the result
+     * @param options.periodicity - Time period for data aggregation ('hour' | 'day' | 'week' | 'month' | 'quarter' | 'year')
+     * @param options.onPrem - Optional flag for on-premises server usage
+     * @returns Object with timestamps as keys and corresponding values
+     * 
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '64807ea38fc3236',
+     *   dataUrl: 'danse.io'
+     * });
+     * 
+     * const result = await eventsHandler.getMaintenanceModuleData({
+     *   startTime: 1735669800000,  // Unix timestamp for start date
+     *   endTime: 1737829800000,    // Unix timestamp for end date
+     *   operator: '', //string for operator
+     *   periodicity: '', // periodicity
+     *   dataPrecision: 1,
+     *   remarkGroup: [''], // array
+     *   eventId: [''], array
+     *   maintenanceModuleId: ''  // id for maintainance module
+     * });
+     * 
+     * // Example output:
+     * // {
+     * //   "2024-12-31T18:30:00Z": 0,
+     * //   "2025-01-01T18:30:00Z": 0,
+     * //   "2025-01-07T18:30:00Z": 31308.6,  // Partial day
+     * //   "2025-01-08T18:30:00Z": 86400,    // Full day (24 hours in seconds)
+     * //   "2025-01-13T18:30:00Z": 64910.7,  // Partial day
+     * //   "2025-01-22T18:30:00Z": 8.4,      // Short duration
+     * //   "2025-01-23T18:30:00Z": 0
+     * //   ....                   // more values can be present
+     * // }
+     * ```
+     * 
+     * The returned object contains:
+     * - Keys: ISO timestamps representing the start of each period
+     * - Values: Duration in seconds (for activeDuration/inactiveDuration) or count (for count operator)
+     *   - 0: No activity during that period
+     *   - 86400: Full day of activity (24 hours in seconds)
+     *   - Other values: Partial duration of activity
      */
     try {
       const {
@@ -620,21 +872,84 @@ export default class EventsHandler {
     throw new Error(`Invalid time format: ${time}`);
   }
 
+  /**
+   * Fetch device data from the API with optional filters for time range and device list.
+   *
+   * @param options - Configuration options for retrieving device data
+   * @returns Array of device data records
+   *
+   * @example
+   * ```typescript
+   * const eventsHandler = new EventsHandler({
+   *   userId: 'your-user-id',
+   *   dataUrl: 'your-data-url',
+   *   onPrem: false,
+   *   tz: 'UTC'
+   * });
+   *
+   * const result = await eventsHandler.getDeviceData({
+   *   devices: ["device1", "device2"],
+   *   startTime: "2025-01-27 07:00:00",
+   *   endTime: "2025-01-28 06:59:59"
+   * });
+   *
+   * // Example output structure:
+   * // [
+   * //   {
+   * //     _id: "record-id-1",
+   * //     devID: "device1",
+   * //     data: {
+   * //       D0: "start-time",
+   * //       D1: "end-time",
+   * //       D2: "status",
+   * //       D3: "reason",
+   * //       D6: "value1",
+   * //       D7: "value2",
+   * //       ... // more fields
+   * //       fromVMS: false
+   * //     }
+   * //   },
+   * //   {
+   * //     _id: "record-id-2",
+   * //     devID: "device2",
+   * //     data: {
+   * //       D0: "start-time",
+   * //       D1: "end-time",
+   * //       D2: "status",
+   * //       D3: "reason",
+   * //       D6: "value1",
+   * //       D7: "value2",
+   * //       ... // more fields
+   * //       fromVMS: false
+   * //     }
+   * //   }
+   * // ]
+   * ```
+   *
+   * Each record contains:
+   * - _id: Unique identifier for the record
+   * - devID: Device identifier
+   * - data: Object with device data fields (D0, D1, D2, ...), including status, times, and other metrics
+   *   - fromVMS: boolean flag
+   */
   async getDeviceData(options: DeviceDataOptions = {}): Promise<any[]> {
-    /**
-     * Fetch device data from the API with optional filters for time range and device list.
-     */
     try {
-      const { devices, n = 5000, endTime, startTime, onPrem } = options;
+      const { devices, n = 5000, startTime, endTime, onPrem } = options;
 
       const url = this.formatUrl(GET_DEVICE_DATA, onPrem);
-      const payload = {
+      const payload: any = {
         devices,
-        n,
-        endTime,
-        startTime
+        page: 1,
+        limit: n,
+        rawData: true,
       };
-
+      if (startTime) {
+        payload.startTime = startTime;
+      }
+      
+      if (endTime) {
+        payload.endTime = endTime;
+      }
       const data = await this.getPaginatedData(url, payload, false);
       return data;
 
@@ -644,27 +959,120 @@ export default class EventsHandler {
     }
   }
 
+  /**
+   * Retrieve device data rows from the server based on sensor parameters and optional time range filters.
+   *
+   * @param options - Configuration options for retrieving sensor rows
+   * @returns Array of sensor data records
+   *
+   * @example
+   * ```typescript
+   * const eventsHandler = new EventsHandler({
+   *   userId: 'your-user-id',
+   *   dataUrl: 'your-data-url',
+   *   onPrem: false,
+   *   tz: 'UTC'
+   * });
+   *
+   * const result = await eventsHandler.getSensorRows({
+   *   deviceId: 'PHEXT_L1ne',
+   *   sensor: 'D0',
+   *   value: '2025-05-08 12:49:53',
+   *   startTime: '2025-05-08 12:00:00',
+   *   endTime: '2025-05-08 14:00:00'
+   * });
+   *
+   * // Example output (partial):
+   * // [
+   * //   {
+   * //     _id: "",
+   * //     devID: "",
+   * //     data: {
+   * //       D0: "2025-05-08 12:49:53",
+   * //       D1: "2025-05-08 12:59:39",
+   * //       D2: "Downtime",
+   * //       D3: "MC Setting Time",
+   * //       D4: "220044",
+   * //       D5: "800033.0",
+   * //       D6: "0.00",
+   * //       D7: "586.0",
+   * //       ... // more fields
+   * //       fromVMS: false
+   * //     }
+   * //   },
+   * //   {
+   * //     _id: "", // id for the user
+   * //     devID: "",  // device ID
+   * //     data: {
+   * //       D0: "2025-05-08 12:59:39",
+   * //       D1: "2025-05-08 13:18:01",
+   * //       D2: "Downtime",
+   * //       D3: "Lunch/Breakfast",
+   * //       D4: "220044",
+   * //       D5: "800033.0",
+   * //       D6: "0.00",
+   * //       D7: "1102.0",
+   * //       ... // more fields
+   * //       fromVMS: false
+   * //     }
+   * //   }
+   * // ]
+   * ```
+   *
+   * Each record contains:
+   * - _id: Unique identifier for the record
+   * - devID: Device identifier
+   * - data: Object with sensor data fields (D0, D1, D2, ...), including status, times, and other metrics
+   *   - fromVMS: boolean flag
+   */
   async getSensorRows(options: SensorRowsOptions): Promise<any[]> {
-    /**
-     * Retrieve device data rows from the server based on sensor parameters and optional time range filters.
-     */
     try {
       const { deviceId, sensor, value, endTime, startTime, alias = false, onPrem } = options;
-
+  
       const url = this.formatUrl(GET_SENSOR_ROWS, onPrem);
-      const payload = {
-        deviceId,
-        sensor,
-        value,
-        endTime,
-        startTime,
-        alias
+      
+      // Match Python payload structure exactly
+      const params: any = {
+        devID: deviceId,    // Python uses "devID"
+        key: sensor,        // Python uses "key" 
+        value: value
       };
-
-      const data = await this.getPaginatedData(url, payload, false);
-      return data;
-
+  
+      // Use Python's time parameter names
+      if (startTime) {
+        params.sTime = startTime;  // Python uses "sTime"
+      }
+      
+      if (endTime) {
+        params.eTime = endTime;    // Python uses "eTime"
+      }
+  
+      // GET request logic (matching Python's requests.get)
+      const requestStartTime = Date.now();
+      const response = await axios.get(url, { 
+        params: params,  // Send as query parameters for GET
+        headers: { userID: this.userId } 
+      });
+  
+      if (this.logTime) {
+        const duration = (Date.now() - requestStartTime) / 1000;
+        console.log(`[NETWORK] API ${url} response time: ${duration.toFixed(4)} seconds`);
+      }
+  
+      const responseData = response.data;
+      if (responseData && responseData.data) {
+        return responseData.data;  // Python expects response.data
+      }
+  
+      throw new Error('Invalid response format');
+  
     } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = this.errorMessage(error.response, error.config?.url || 'unknown');
+        console.error(`[EXCEPTION] ${error.name}: ${errorMessage}`);
+      } else {
+        console.error(`[EXCEPTION] ${error.message || error}`);
+      }
       console.error(`[EXCEPTION] ${error.message || error}`);
       return [];
     }
@@ -673,6 +1081,49 @@ export default class EventsHandler {
   async getDeviceMetadata(deviceId: string, onPrem?: boolean): Promise<Record<string, any>> {
     /**
      * Fetches metadata for a specific device.
+     *
+     * @param deviceId - The device identifier
+     * @param onPrem - Optional flag for on-premises server usage
+     * @returns An object where each key is a sensor/data channel (e.g., D0, D1, Status, RSSI),
+     *          and the value is an array of objects describing the variable and its display label.
+     *
+     * @example
+     * ```typescript
+     * const eventsHandler = new EventsHandler({
+     *   userId: '',   // the id for the user
+     *   dataUrl: 'date.io'  // the data url 
+     * });
+     * 
+     * const metadata = await eventsHandler.getDeviceMetadata('PPA_G8');
+     * // Example output:
+     * // {
+     * //   "D0": [
+     * //     { "customShow": "Raw Variable", "customVariable": "PPAPEM_G8_D0" },
+     * //     { "customShow": "Processed Reading", "customVariable": "1*PPAPEM_G8_D0+0" }
+     * //   ],
+     * //   "D34": [
+     * //     { "customShow": "Raw Variable", "customVariable": "PPAPEM_G8_D34" },
+     * //     { "customShow": "Processed Reading", "customVariable": "1*PPAPEM_G8_D34+0" }
+     * //   ],
+     * //   "Status": [
+     * //     { "customShow": "Raw Variable", "customVariable": "PPAPEM_G8_Status" },
+     * //     { "customShow": "Processed Reading", "customVariable": "1*PPAPEM_G8_Status+0" }
+     * //   ],
+     * //   "RSSI": [
+     * //     { "customShow": "Raw Variable", "customVariable": "PPAPEM_G8_RSSI" },
+     * //     { "customShow": "Processed Reading", "customVariable": "1*PPAPEM_G8_RSSI+0" }
+     * //   ]
+     * // }
+     * ```
+     *
+     * Each key (e.g., D0, D34, Status, RSSI) represents a sensor or data channel.
+     * Each value is an array containing two objects:
+     *   - First object: Raw variable information
+     *     - customShow: Label for the raw variable
+     *     - customVariable: The raw variable name
+     *   - Second object: Processed reading information
+     *     - customShow: Label for the processed reading
+     *     - customVariable: The formula for calculating the processed reading
      */
     try {
       const url = this.formatUrl(GET_DEVICE_METADATA_MONGO_URL, onPrem);

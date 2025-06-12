@@ -7,7 +7,7 @@ import {
   VERSION,
   MAX_RETRIES,
   RETRY_DELAY
-} from '../utils/constants.js';
+} from '../../utils/constants.js';
 import DataAccess from './DataAccess.js';
 
 // Type definitions for BruceHandler

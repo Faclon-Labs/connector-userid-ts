@@ -1,8 +1,9 @@
-// Main entry point for io_connect_ts module
-export { default as DataAccess } from './connectors/DataAccess.js';
-export { default as EventsHandler } from './connectors/EventsHandler.js';
-export { default as MachineTimeline } from './connectors/MachineTimeline.js';
-export { default as BruceHandler } from './connectors/bruceHandler.js';
+// Main entry point for connector-userid-ts module
+export { default as EventsHandler } from './connectors/data/EventsHandler.js';
+export { default as MachineTimeline } from './connectors/data/MachineTimeline.js';
+export { MqttConnector } from './connectors/pubsub/mqttHandler.js';
+export { default as BruceHandler } from './connectors/data/BruceHandler.js';
+export { default as DataAccess } from './connectors/data/DataAccess.js';
 
 // Export all types and interfaces
 export type {
@@ -24,7 +25,7 @@ export type {
   GetLoadEntitiesOptions,
   LoadEntity,
   LoadEntitiesResponse
-} from './connectors/DataAccess.js';
+} from './connectors/data/DataAccess.js';
 
 export type {
   EventsHandlerConfig,
@@ -36,13 +37,13 @@ export type {
   DeviceDataOptions,
   SensorRowsOptions,
   EventCategory
-} from './connectors/EventsHandler.js';
+} from './connectors/data/EventsHandler.js';
 
 export type {
   MachineTimelineConfig,
   MongoDataOptions,
   CreateMongoRowsOptions
-} from './connectors/MachineTimeline.js';
+} from './connectors/data/MachineTimeline.js';
 
 export type {
   BruceHandlerConfig,
@@ -66,7 +67,7 @@ export type {
   InsightResult,
   InsightResultsPagination,
   FetchInsightResultsResponse
-} from './connectors/bruceHandler.js';
+} from './connectors/data/BruceHandler.js';
 
 // Export constants and utilities
 export * from './utils/constants.js'; 
