@@ -1,6 +1,6 @@
 {
   "name": "connector-userid-ts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TypeScript SDK for connecting to and interacting with the IoSense platform data services",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -46,8 +46,8 @@
     "npm-package"
   ],
   "author": {
-    "name": "",
-    "email": "",
+    "name": "Henil Jain",
+    "email": "henil@faclon.com",
     "url": ""
   },
   "license": "MIT",
