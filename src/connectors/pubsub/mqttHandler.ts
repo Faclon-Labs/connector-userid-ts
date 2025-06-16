@@ -1,4 +1,4 @@
-import * as mqtt from 'mqtt';
+import mqtt from 'mqtt';
 import { Buffer } from 'buffer';
 
 export interface MqttConfig {
